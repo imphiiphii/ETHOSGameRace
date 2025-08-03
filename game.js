@@ -191,11 +191,17 @@ document.addEventListener("keyup", e => {
   keys[e.key.toLowerCase()] = false;
 });
 
-document.addEventListener("touchstart", () => {
+// ✅ Tambahkan event listener ke canvas juga (biar pasti kena tap)
+canvas.addEventListener("touchstart", (e) => {
+  e.preventDefault(); // mencegah scroll default
   startGame();
-});
+}, { passive: false });
+
+// ✅ Tambahkan fallback klik biasa (tap di beberapa browser)
+canvas.addEventListener("click", startGame);
 
 window.onload = () => {
-  gameLoop();
+  preloadAssets(() => {
+    gameLoop();
+  });
 };
-
