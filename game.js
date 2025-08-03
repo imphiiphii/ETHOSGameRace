@@ -8,6 +8,7 @@ let keys = {};
 let enemies = [];
 let score = 0;
 let roadY = 0;
+let gameStarted = false;
 
 const carImg = new Image();
 carImg.src = "assets/player-car.png";
@@ -136,6 +137,15 @@ function drawScore() {
   ctx.fillText(`Score: ${score}`, 20, canvas.height - 20);
 }
 
+function drawStartScreen() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "white";
+  ctx.font = "40px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("Press any key to continue", canvas.width / 2, canvas.height / 2);
+}
+
 
 // === UPDATE ===
 function update() {
@@ -151,6 +161,13 @@ function update() {
 // === MAIN LOOP ===
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (!gameStarted) {
+    drawStartScreen();
+    requestAnimationFrame(gameLoop);
+    return;
+  }
+
   drawBackground();
   drawSun();
   drawRoad();
@@ -163,11 +180,17 @@ function gameLoop() {
 
 
 // === INIT ===
-document.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
+document.addEventListener("keydown", e => {
+  keys[e.key.toLowerCase()] = true;
+  if (!gameStarted) {
+    gameStarted = true;
+    engineSound.loop = true;
+    engineSound.play();
+  }
+});
+
 document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
 window.onload = () => {
-  engineSound.loop = true;
-  engineSound.play();
   gameLoop();
 };
