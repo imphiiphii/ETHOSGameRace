@@ -176,6 +176,7 @@ function gameLoop() {
 // === INIT ===
 function startGame() {
   if (!gameStarted) {
+    console.log("Game started");
     gameStarted = true;
     engineSound.loop = true;
     engineSound.play().catch(() => {});
@@ -191,17 +192,13 @@ document.addEventListener("keyup", e => {
   keys[e.key.toLowerCase()] = false;
 });
 
-// ✅ Tambahkan event listener ke canvas juga (biar pasti kena tap)
 canvas.addEventListener("touchstart", (e) => {
-  e.preventDefault(); // mencegah scroll default
+  e.preventDefault();
+  console.log("Touch detected");
   startGame();
 }, { passive: false });
 
-// ✅ Tambahkan fallback klik biasa (tap di beberapa browser)
-canvas.addEventListener("click", startGame);
-
-window.onload = () => {
-  preloadAssets(() => {
-    gameLoop();
-  });
-};
+canvas.addEventListener("click", () => {
+  console.log("Click detected");
+  startGame();
+});
