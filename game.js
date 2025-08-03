@@ -174,19 +174,28 @@ function gameLoop() {
 }
 
 // === INIT ===
-document.addEventListener("keydown", e => {
-  keys[e.key.toLowerCase()] = true;
+function startGame() {
   if (!gameStarted) {
     gameStarted = true;
     engineSound.loop = true;
     engineSound.play().catch(() => {});
   }
+}
+
+document.addEventListener("keydown", e => {
+  keys[e.key.toLowerCase()] = true;
+  startGame();
 });
 
 document.addEventListener("keyup", e => {
   keys[e.key.toLowerCase()] = false;
 });
 
+document.addEventListener("touchstart", () => {
+  startGame();
+});
+
 window.onload = () => {
   gameLoop();
 };
+
