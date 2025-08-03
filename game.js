@@ -1,6 +1,3 @@
-# Final ZIP creation with updated game.js and placeholder assets
-
-game_js_code = """
 // === SETUP & VARIABLES ===
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -41,6 +38,7 @@ const engineSound = new Audio("assets/engine.mp3");
 const explosionSound = new Audio("assets/explosion.mp3");
 const passSound = new Audio("assets/pass.mp3");
 
+// === CAR ===
 const car = {
   x: canvas.width / 2 - 50,
   y: canvas.height - 150,
@@ -49,6 +47,7 @@ const car = {
   speed: 10
 };
 
+// === ENEMY ===
 function createEnemy() {
   const width = 100;
   const height = 150;
@@ -90,6 +89,7 @@ function updateEnemies() {
   }
 }
 
+// === DRAW FUNCTIONS ===
 function drawCar() {
   ctx.drawImage(carImg, car.x, car.y, car.width, car.height);
   drawBubble(car.x + 10, car.y - 40, "When code?");
@@ -143,21 +143,26 @@ function drawStartScreen() {
   ctx.fillText("Press any key to continue", canvas.width / 2, canvas.height / 2);
 }
 
+// === UPDATE ===
 function update() {
   if (keys["a"] || keys["ArrowLeft"]) car.x -= car.speed;
   if (keys["d"] || keys["ArrowRight"]) car.x += car.speed;
   if (car.x < 0) car.x = 0;
   if (car.x + car.width > canvas.width) car.x = canvas.width - car.width;
+
   updateEnemies();
 }
 
+// === MAIN LOOP ===
 function gameLoop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   if (!gameStarted) {
     drawStartScreen();
     requestAnimationFrame(gameLoop);
     return;
   }
+
   drawBackground();
   drawSun();
   drawRoad();
@@ -168,17 +173,7 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-function preloadAssets(callback) {
-  let loaded = 0;
-  const allImages = [carImg, roadImg, bgImg, sunImg, explosionImg, flashImg, ...enemyImgs];
-  allImages.forEach(img => {
-    img.onload = () => {
-      loaded++;
-      if (loaded === allImages.length) callback();
-    };
-  });
-}
-
+// === INIT ===
 document.addEventListener("keydown", e => {
   keys[e.key.toLowerCase()] = true;
   if (!gameStarted) {
@@ -188,38 +183,10 @@ document.addEventListener("keydown", e => {
   }
 });
 
-document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+document.addEventListener("keyup", e => {
+  keys[e.key.toLowerCase()] = false;
+});
 
 window.onload = () => {
-  preloadAssets(() => {
-    gameLoop();
-  });
+  gameLoop();
 };
-"""
-
-zip_path = "/mnt/data/ETHOS_Race_Final.zip"
-with zipfile.ZipFile(zip_path, 'w') as zipf:
-    zipf.writestr("index.html", """<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>When Code? Racing</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <canvas id="gameCanvas"></canvas>
-  <script src="game.js"></script>
-</body>
-</html>
-""")
-    zipf.writestr("style.css", "body { margin: 0; overflow: hidden; background: black; } canvas { display: block; }")
-    zipf.writestr("game.js", game_js_code)
-    # Placeholder empty asset files
-    for asset_name in [
-        "player-car.png", "road.png", "background.png", "sun.png", "explosion.png", "flash.png",
-        "enemy1.png", "enemy2.png", "enemy3.png", "engine.mp3", "explosion.mp3", "pass.mp3"
-    ]:
-        zipf.writestr(f"assets/{asset_name}", b"")
-
-zip_path
